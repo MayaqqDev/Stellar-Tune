@@ -17,11 +17,18 @@ import java.util.Collection;
 public class MessageCommandMixin {
     @Inject(method = "execute", at = @At("HEAD"), cancellable = true)
     private static void onExecute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedMessage message, CallbackInfo ci) {
-        String customMessage = "§b" + source.getName() + " §6<- §b" + message.getContent().getString();
-        String otherMessage = "§b" + source.getName() + " §6-> §b" + message.getContent().getString();
-        source.getPlayer().sendMessage(Text.of(otherMessage), false);
+        String messageToTargets = "§dFrom §7" + source.getDisplayName().getString() + "§7: " + message.getContent().getString();
+        // make a string of the targets name seperated by commas
+        StringBuilder targetsString = new StringBuilder();
+        for (ServerPlayerEntity target : targets) {
+            targetsString.append(target.getDisplayName().getString()).append(", ");
+        }
+        // remove the last comma and space
+        targetsString = new StringBuilder(targetsString.substring(0, targetsString.length() - 2));
+        String messageToSender = "§dTo §7" + targetsString + "§7: " + message.getContent().getString();
+        source.getPlayer().sendMessage(Text.of(messageToSender), false);
         targets.forEach(target -> {
-            target.sendMessage(Text.of(customMessage), false);
+            target.sendMessage(Text.of(messageToTargets), false);
             ReplyCommand.lastMessage.put(target, source.getPlayer());
         });
         ci.cancel();

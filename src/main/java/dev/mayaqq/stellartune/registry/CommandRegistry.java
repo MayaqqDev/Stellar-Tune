@@ -4,20 +4,23 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import dev.mayaqq.stellartune.commands.GamemodeCommands;
-import dev.mayaqq.stellartune.commands.HatCommand;
-import dev.mayaqq.stellartune.commands.RepairCommand;
-import dev.mayaqq.stellartune.commands.ReplyCommand;
+import dev.mayaqq.stellartune.commands.*;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.EntitySelector;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+
+import java.util.Collection;
 
 public class CommandRegistry {
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
+
             // Game mode commands
             LiteralCommandNode<ServerCommandSource> gmcNode = CommandManager
                     .literal("gmc")
@@ -87,22 +90,64 @@ public class CommandRegistry {
                     })
                     .build();
 
+            LiteralCommandNode<ServerCommandSource> healNode = CommandManager
+                    .literal("heal")
+                    .requires(source -> source.hasPermissionLevel(4))
+                    .executes(HealCommand::heal)
+                    .build();
+            ArgumentCommandNode<ServerCommandSource, EntitySelector> healPlayersArgumentNode = CommandManager
+                    .argument("players", EntityArgumentType.players())
+                    .executes(context -> {
+                        Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                        HealCommand.healPlayers(context, players);
+                        return 1;
+                    })
+                    .build();
+
+            LiteralCommandNode<ServerCommandSource> feedNode = CommandManager
+                    .literal("feed")
+                    .requires(source -> source.hasPermissionLevel(4))
+                    .executes(FeedCommand::feed)
+                    .build();
+            ArgumentCommandNode<ServerCommandSource, EntitySelector> feedPlayersArgumentNode = CommandManager
+                    .argument("players", EntityArgumentType.players())
+                    .executes(context -> {
+                        Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                        FeedCommand.feedPlayers(context, players);
+                        return 1;
+                    })
+                    .build();
+
+            LiteralCommandNode<ServerCommandSource> spawnNode = CommandManager
+                    .literal("spawn")
+                    .requires(source -> source.hasPermissionLevel(3))
+                    .executes(SpawnCommand::spawn)
+                    .build();
+            LiteralCommandNode<ServerCommandSource> setSpawnNode = CommandManager
+                    .literal("setSpawn")
+                    .requires(source -> source.hasPermissionLevel(4))
+                    .executes(SpawnCommand::setSpawn)
+                    .build();
+
             // Add commands to root
             RootCommandNode<ServerCommandSource> root = dispatcher.getRoot();
-            root.addChild(gmcNode);
-            root.addChild(gmsNode);
-            root.addChild(gmaNode);
-            root.addChild(gmspNode);
 
-            root.addChild(hatNode);
+            // root commands
+            LiteralCommandNode[] nodes = new LiteralCommandNode[]{
+                    gmcNode, gmsNode, gmaNode, gmspNode,
+                    hatNode, repairNode, replyNode, healNode,
+                    feedNode, spawnNode, setSpawnNode
+            };
+            for (LiteralCommandNode node : nodes) {
+                root.addChild(node);
+            }
+            // apended commands
             hatNode.addChild(hatItemNode);
-
-            root.addChild(repairNode);
             repairNode.addChild(repairSingleNode);
             repairNode.addChild(repairAllNode);
-
-            root.addChild(replyNode);
             replyNode.addChild(replyMessageNode);
+            healNode.addChild(healPlayersArgumentNode);
+            feedNode.addChild(feedPlayersArgumentNode);
         });
     }
 }
