@@ -8,15 +8,14 @@ import java.io.*;
 
 public class StellarConfig {
 
-    public static Config CONFIG = new Config();
-
     private static final File configFolder = new File(FabricLoader.getInstance().getConfigDir() + "/stellar");
     private static final File configFile = new File(configFolder, "config.json");
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public static Config CONFIG = new Config();
 
     public static void load() {
         //we do bunch of checking here mainly if the file exists
-        if (!configFolder.exists()){
+        if (!configFolder.exists()) {
             configFolder.mkdirs();
         }
         if (!configFile.exists()) {
@@ -50,7 +49,12 @@ public class StellarConfig {
         public Integer[] spawnCoords = new Integer[3];
         public String helpContent = "This will get send when the player does /help";
         public int tpaTimeout = 60;
+        public int rtpRange = 10000;
+        public boolean limitedRtpUse = false;
+        public int rtpUses = 3;
+        public int rtpCooldown = 3600;
 
-        public Config() {}
+        public Config() {
+        }
     }
 }

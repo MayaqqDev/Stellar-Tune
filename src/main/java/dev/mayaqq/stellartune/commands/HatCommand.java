@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 
 public class HatCommand {
     private static final int slot = 3;
+
     public static int normal(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
         ItemStack item = player.getInventory().getStack(player.getInventory().selectedSlot);
@@ -22,6 +23,7 @@ public class HatCommand {
 
         return 1;
     }
+
     public static int item(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ItemStackArgument itemStackArgument = ItemStackArgumentType.getItemStackArgument(context, "item");
         ItemStack item = itemStackArgument.createStack(1, false);

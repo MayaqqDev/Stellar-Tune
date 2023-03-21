@@ -16,14 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class HelpCommandMixin {
     @Inject(method = "register", at = @At("HEAD"), cancellable = true)
     private static void register(CommandDispatcher<ServerCommandSource> dispatcher, CallbackInfo ci) {
-        dispatcher.register(
-                CommandManager.literal("help")
-                        .executes(context -> {
-                            ServerPlayerEntity player = context.getSource().getPlayer();
-                            player.sendMessage(Text.of(StellarConfig.CONFIG.helpContent));
-                            return 1;
-                        })
-        );
+        dispatcher.register(CommandManager.literal("help").executes(context -> {
+            ServerPlayerEntity player = context.getSource().getPlayer();
+            player.sendMessage(Text.of(StellarConfig.CONFIG.helpContent));
+            return 1;
+        }));
         ci.cancel();
     }
 }

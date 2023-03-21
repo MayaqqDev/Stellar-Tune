@@ -12,6 +12,7 @@ public class ReplyCommand {
 
     // player, player that last messaged them
     public static HashMap<ServerPlayerEntity, ServerPlayerEntity> lastMessage = new HashMap<>();
+
     public static int reply(CommandContext<ServerCommandSource> context) {
         String message = StringArgumentType.getString(context, "message");
         ServerPlayerEntity sender = context.getSource().getPlayer();

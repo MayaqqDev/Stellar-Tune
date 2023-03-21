@@ -17,6 +17,7 @@ public class FeedCommand {
 
         return 1;
     }
+
     public static int feedPlayers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
         players.forEach(FeedCommand::feedPlayer);

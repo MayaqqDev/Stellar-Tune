@@ -17,6 +17,7 @@ public class HealCommand {
 
         return 1;
     }
+
     public static int healPlayers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
         players.forEach(HealCommand::healPlayer);

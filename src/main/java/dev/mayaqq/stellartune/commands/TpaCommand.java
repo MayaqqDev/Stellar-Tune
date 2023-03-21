@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TpaCommand {
     public static final HashMap<ServerPlayerEntity, List<ServerPlayerEntity>> tpaRequests = new HashMap<>();
+
     public static int tpa(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity sender = context.getSource().getPlayer();
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
@@ -43,6 +44,7 @@ public class TpaCommand {
         }, StellarConfig.CONFIG.tpaTimeout, TimeUnit.SECONDS);
         return 1;
     }
+
     public static int decline(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity sender = context.getSource().getPlayer();
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");

@@ -19,6 +19,7 @@ public class SpawnCommand {
 
         return 1;
     }
+
     public static int setSpawn(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
         Integer[] spawnCoords = {player.getBlockPos().getX(), player.getBlockPos().getY(), player.getBlockPos().getZ()};
