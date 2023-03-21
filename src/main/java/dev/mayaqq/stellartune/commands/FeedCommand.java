@@ -1,6 +1,8 @@
 package dev.mayaqq.stellartune.commands;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -15,14 +17,15 @@ public class FeedCommand {
 
         return 1;
     }
-    public static void feedPlayers(CommandContext<ServerCommandSource> context, Collection<ServerPlayerEntity> target) {
-        target.forEach(FeedCommand::feedPlayer);
-        if (target.size() == 1)
-            context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have fed §b" + target.toArray()[0] + " §6!"), true);
-        else if (target.size() > 1) {
-            context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have fed §b" + target.size() + " §6players!"), true);
+    public static int feedPlayers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+        players.forEach(FeedCommand::feedPlayer);
+        if (players.size() == 1)
+            context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have fed §b" + players.toArray()[0] + " §6!"), true);
+        else if (players.size() > 1) {
+            context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have fed §b" + players.size() + " §6players!"), true);
         }
-
+        return 1;
     }
 
     public static void feedPlayer(ServerPlayerEntity player) {

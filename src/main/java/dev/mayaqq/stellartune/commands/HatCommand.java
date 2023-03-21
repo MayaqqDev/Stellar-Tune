@@ -1,6 +1,9 @@
 package dev.mayaqq.stellartune.commands;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.command.argument.ItemStackArgument;
+import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,7 +22,9 @@ public class HatCommand {
 
         return 1;
     }
-    public static int item(CommandContext<ServerCommandSource> context, ItemStack item) {
+    public static int item(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ItemStackArgument itemStackArgument = ItemStackArgumentType.getItemStackArgument(context, "item");
+        ItemStack item = itemStackArgument.createStack(1, false);
         ServerPlayerEntity player = context.getSource().getPlayer();
         ItemStack oldItem = player.getInventory().armor.get(slot);
         String message = "§b" + item.getName().getString() + " §6has been put on your head!";

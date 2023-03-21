@@ -12,14 +12,25 @@ import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-
-import java.util.Collection;
 
 public class CommandRegistry {
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
+
+            LiteralCommandNode<ServerCommandSource> stellartuneNode = CommandManager
+                    .literal("stellartune")
+                    .executes(HelpCommand::run)
+                    .build();
+            LiteralCommandNode<ServerCommandSource> stellartuneHelpNode = CommandManager
+                    .literal("help")
+                    .executes(HelpCommand::run)
+                    .build();
+
+            ArgumentCommandNode<ServerCommandSource, String> stellartuneHelpContentNode = CommandManager
+                    .argument("content", StringArgumentType.greedyString())
+                    .requires(source -> source.hasPermissionLevel(4))
+                    .executes(HelpCommand::setContent)
+                    .build();
 
             // Game mode commands
             LiteralCommandNode<ServerCommandSource> gmcNode = CommandManager
@@ -47,10 +58,7 @@ public class CommandRegistry {
                     .build();
             ArgumentCommandNode<ServerCommandSource, ItemStackArgument> hatItemNode = CommandManager
                     .argument("item", ItemStackArgumentType.itemStack(dedicated))
-                    .executes(context -> {
-                        ItemStackArgument item = ItemStackArgumentType.getItemStackArgument(context, "item");
-                        return HatCommand.item(context, item.createStack(1, false));
-                    })
+                    .executes(HatCommand::item)
                     .build();
 
             //repair command
@@ -75,19 +83,12 @@ public class CommandRegistry {
             // reply command
             LiteralCommandNode<ServerCommandSource> replyNode = CommandManager
                     .literal("r")
-                    .executes(context -> {
-                        context.getSource().getPlayer().sendMessage(Text.of("§4Please type the message you want to reply with after the command!"), false);
-                        return 0;
-                    })
+                    .executes(ReplyCommand::fail)
                     .build();
 
             ArgumentCommandNode<ServerCommandSource, String> replyMessageNode = CommandManager
                     .argument("message", StringArgumentType.greedyString())
-                    .executes(context -> {
-                        String message = StringArgumentType.getString(context, "message");
-                        ReplyCommand.reply(context, message);
-                        return 1;
-                    })
+                    .executes(ReplyCommand::reply)
                     .build();
 
             LiteralCommandNode<ServerCommandSource> healNode = CommandManager
@@ -97,11 +98,7 @@ public class CommandRegistry {
                     .build();
             ArgumentCommandNode<ServerCommandSource, EntitySelector> healPlayersArgumentNode = CommandManager
                     .argument("players", EntityArgumentType.players())
-                    .executes(context -> {
-                        Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
-                        HealCommand.healPlayers(context, players);
-                        return 1;
-                    })
+                    .executes(HealCommand::healPlayers)
                     .build();
 
             LiteralCommandNode<ServerCommandSource> feedNode = CommandManager
@@ -111,11 +108,7 @@ public class CommandRegistry {
                     .build();
             ArgumentCommandNode<ServerCommandSource, EntitySelector> feedPlayersArgumentNode = CommandManager
                     .argument("players", EntityArgumentType.players())
-                    .executes(context -> {
-                        Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
-                        FeedCommand.feedPlayers(context, players);
-                        return 1;
-                    })
+                    .executes(FeedCommand::feedPlayers)
                     .build();
 
             LiteralCommandNode<ServerCommandSource> spawnNode = CommandManager
@@ -129,6 +122,33 @@ public class CommandRegistry {
                     .executes(SpawnCommand::setSpawn)
                     .build();
 
+            // tpa command and stuff with it
+            LiteralCommandNode<ServerCommandSource> tpaNode = CommandManager
+                    .literal("tpa")
+                    .build();
+            ArgumentCommandNode<ServerCommandSource, EntitySelector> tpaPlayerNode = CommandManager
+                    .argument("player", EntityArgumentType.player())
+                    .executes(TpaCommand::tpa)
+                    .build();
+
+            LiteralCommandNode<ServerCommandSource> tpacceptNode = CommandManager
+                    .literal("tpaccept")
+                    .executes(TpaCommand::acceptWithoutArgument)
+                    .build();
+            ArgumentCommandNode<ServerCommandSource, EntitySelector> tpacceptPlayerNode = CommandManager
+                    .argument("player", EntityArgumentType.player())
+                    .executes(TpaCommand::accept)
+                    .build();
+
+            LiteralCommandNode<ServerCommandSource> tpadeclineNode = CommandManager
+                    .literal("tpadecline")
+                    .executes(TpaCommand::declineWithoutArgument)
+                    .build();
+            ArgumentCommandNode<ServerCommandSource, EntitySelector> tpadeclinePlayerNode = CommandManager
+                    .argument("player", EntityArgumentType.player())
+                    .executes(TpaCommand::decline)
+                    .build();
+
             // Add commands to root
             RootCommandNode<ServerCommandSource> root = dispatcher.getRoot();
 
@@ -136,7 +156,8 @@ public class CommandRegistry {
             LiteralCommandNode[] nodes = new LiteralCommandNode[]{
                     gmcNode, gmsNode, gmaNode, gmspNode,
                     hatNode, repairNode, replyNode, healNode,
-                    feedNode, spawnNode, setSpawnNode
+                    feedNode, spawnNode, setSpawnNode, stellartuneNode,
+                    tpaNode, tpacceptNode, tpadeclineNode
             };
             for (LiteralCommandNode node : nodes) {
                 root.addChild(node);
@@ -148,6 +169,11 @@ public class CommandRegistry {
             replyNode.addChild(replyMessageNode);
             healNode.addChild(healPlayersArgumentNode);
             feedNode.addChild(feedPlayersArgumentNode);
+            stellartuneNode.addChild(stellartuneHelpNode);
+            stellartuneHelpNode.addChild(stellartuneHelpContentNode);
+            tpaNode.addChild(tpaPlayerNode);
+            tpacceptNode.addChild(tpacceptPlayerNode);
+            tpadeclineNode.addChild(tpadeclinePlayerNode);
         });
     }
 }

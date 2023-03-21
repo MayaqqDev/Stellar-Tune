@@ -1,6 +1,8 @@
 package dev.mayaqq.stellartune.commands;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import dev.mayaqq.stellartune.config.StellarConfig;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
@@ -21,6 +23,13 @@ public class HelpCommand {
         message.append(Text.literal("!\n").formatted(Formatting.GRAY));
         message.append(Text.literal("----------------------------------------------").formatted(Formatting.AQUA));
         context.getSource().getPlayer().sendMessage(message, false);
+        return 1;
+    }
+
+    public static int setContent(CommandContext<ServerCommandSource> context) {
+        StellarConfig.CONFIG.helpContent = StringArgumentType.getString(context, "content");
+        StellarConfig.save();
+        context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have changed the help content!"), true);
         return 1;
     }
 }

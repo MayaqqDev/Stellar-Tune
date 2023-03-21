@@ -48,6 +48,8 @@ public class StellarConfig {
     public static class Config {
         // world name : spawn coords
         public Integer[] spawnCoords = new Integer[3];
+        public String helpContent = "This will get send when the player does /help";
+        public int tpaTimeout = 60;
 
         public Config() {}
     }

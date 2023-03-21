@@ -1,5 +1,6 @@
 package dev.mayaqq.stellartune.commands;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -11,7 +12,8 @@ public class ReplyCommand {
 
     // player, player that last messaged them
     public static HashMap<ServerPlayerEntity, ServerPlayerEntity> lastMessage = new HashMap<>();
-    public static int reply(CommandContext<ServerCommandSource> context, String message) {
+    public static int reply(CommandContext<ServerCommandSource> context) {
+        String message = StringArgumentType.getString(context, "message");
         ServerPlayerEntity sender = context.getSource().getPlayer();
         ServerPlayerEntity target = lastMessage.get(sender);
         if (target == null) {
@@ -23,6 +25,12 @@ public class ReplyCommand {
             sender.sendMessage(Text.of(otherMessage), false);
             target.sendMessage(Text.of(dmMessage), false);
         }
+        return 1;
+    }
+
+    public static int fail(CommandContext<ServerCommandSource> context) {
+        ServerPlayerEntity sender = context.getSource().getPlayer();
+        sender.sendMessage(Text.of("§cYou must specify a message!"), false);
         return 1;
     }
 }
