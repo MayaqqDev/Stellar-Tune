@@ -1,5 +1,6 @@
 package dev.mayaqq.stellartune.registry;
 
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -34,22 +35,22 @@ public class CommandRegistry {
 
             //repair command
             LiteralCommandNode<ServerCommandSource> repairNode = CommandManager.literal("repair").requires(source -> source.hasPermissionLevel(4)).executes(RepairCommand::single).build();
-
             LiteralCommandNode<ServerCommandSource> repairSingleNode = CommandManager.literal("hand").requires(source -> source.hasPermissionLevel(4)).executes(RepairCommand::single).build();
-
             LiteralCommandNode<ServerCommandSource> repairAllNode = CommandManager.literal("all").requires(source -> source.hasPermissionLevel(4)).executes(RepairCommand::all).build();
 
             // reply command
             LiteralCommandNode<ServerCommandSource> replyNode = CommandManager.literal("r").executes(ReplyCommand::fail).build();
-
             ArgumentCommandNode<ServerCommandSource, String> replyMessageNode = CommandManager.argument("message", StringArgumentType.greedyString()).executes(ReplyCommand::reply).build();
 
+            //heal command
             LiteralCommandNode<ServerCommandSource> healNode = CommandManager.literal("heal").requires(source -> source.hasPermissionLevel(4)).executes(HealCommand::heal).build();
             ArgumentCommandNode<ServerCommandSource, EntitySelector> healPlayersArgumentNode = CommandManager.argument("players", EntityArgumentType.players()).executes(HealCommand::healPlayers).build();
 
+            //feed command
             LiteralCommandNode<ServerCommandSource> feedNode = CommandManager.literal("feed").requires(source -> source.hasPermissionLevel(4)).executes(FeedCommand::feed).build();
             ArgumentCommandNode<ServerCommandSource, EntitySelector> feedPlayersArgumentNode = CommandManager.argument("players", EntityArgumentType.players()).executes(FeedCommand::feedPlayers).build();
 
+            //spawn command
             LiteralCommandNode<ServerCommandSource> spawnNode = CommandManager.literal("spawn").requires(source -> source.hasPermissionLevel(3)).executes(SpawnCommand::spawn).build();
             LiteralCommandNode<ServerCommandSource> setSpawnNode = CommandManager.literal("setSpawn").requires(source -> source.hasPermissionLevel(4)).executes(SpawnCommand::setSpawn).build();
 
@@ -66,11 +67,22 @@ public class CommandRegistry {
             // rtp
             LiteralCommandNode<ServerCommandSource> rtpNode = CommandManager.literal("rtp").executes(RtpCommand::rtp).build();
 
+            // /flyspeed command
+            LiteralCommandNode<ServerCommandSource> flyspeedNode = CommandManager.literal("flyspeed").build();
+            ArgumentCommandNode<ServerCommandSource, Float> flyspeedSpeedNode = CommandManager.argument("speed", FloatArgumentType.floatArg(0, 100)).executes(FlyspeedCommand::flyspeed).build();
+            LiteralCommandNode<ServerCommandSource> flyspeedResetNode = CommandManager.literal("reset").executes(FlyspeedCommand::reset).build();
+
             // Add commands to root
             RootCommandNode<ServerCommandSource> root = dispatcher.getRoot();
 
             // root commands
-            LiteralCommandNode[] nodes = new LiteralCommandNode[]{gmcNode, gmsNode, gmaNode, gmspNode, hatNode, repairNode, replyNode, healNode, feedNode, spawnNode, setSpawnNode, stellartuneNode, tpaNode, tpacceptNode, tpadeclineNode, rtpNode};
+            LiteralCommandNode[] nodes = new LiteralCommandNode[]{
+                    gmcNode, gmsNode, gmaNode, gmspNode,
+                    hatNode, repairNode, replyNode, healNode,
+                    feedNode, spawnNode, setSpawnNode, stellartuneNode,
+                    tpaNode, tpacceptNode, tpadeclineNode, rtpNode,
+                    flyspeedNode
+            };
             for (LiteralCommandNode node : nodes) {
                 root.addChild(node);
             }
@@ -86,6 +98,8 @@ public class CommandRegistry {
             tpaNode.addChild(tpaPlayerNode);
             tpacceptNode.addChild(tpacceptPlayerNode);
             tpadeclineNode.addChild(tpadeclinePlayerNode);
+            flyspeedNode.addChild(flyspeedSpeedNode);
+            flyspeedNode.addChild(flyspeedResetNode);
         });
     }
 }
