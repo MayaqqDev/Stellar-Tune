@@ -24,10 +24,10 @@ public class CommandRegistry {
             ArgumentCommandNode<ServerCommandSource, String> stellartuneHelpContentNode = CommandManager.argument("content", StringArgumentType.greedyString()).requires(source -> source.hasPermissionLevel(4)).executes(HelpCommand::setContent).build();
 
             // Game mode commands
-            LiteralCommandNode<ServerCommandSource> gmcNode = CommandManager.literal("gmc").executes(GamemodeCommands::gmc).build();
-            LiteralCommandNode<ServerCommandSource> gmsNode = CommandManager.literal("gms").executes(GamemodeCommands::gms).build();
-            LiteralCommandNode<ServerCommandSource> gmaNode = CommandManager.literal("gma").executes(GamemodeCommands::gma).build();
-            LiteralCommandNode<ServerCommandSource> gmspNode = CommandManager.literal("gmsp").executes(GamemodeCommands::gmsp).build();
+            LiteralCommandNode<ServerCommandSource> gmcNode = CommandManager.literal("gmc").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gmc).build();
+            LiteralCommandNode<ServerCommandSource> gmsNode = CommandManager.literal("gms").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gms).build();
+            LiteralCommandNode<ServerCommandSource> gmaNode = CommandManager.literal("gma").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gma).build();
+            LiteralCommandNode<ServerCommandSource> gmspNode = CommandManager.literal("gmsp").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gmsp).build();
 
             // Hat command
             LiteralCommandNode<ServerCommandSource> hatNode = CommandManager.literal("hat").requires(source -> source.hasPermissionLevel(3)).executes(HatCommand::normal).build();
@@ -68,9 +68,13 @@ public class CommandRegistry {
             LiteralCommandNode<ServerCommandSource> rtpNode = CommandManager.literal("rtp").executes(RtpCommand::rtp).build();
 
             // /flyspeed command
-            LiteralCommandNode<ServerCommandSource> flyspeedNode = CommandManager.literal("flyspeed").build();
+            LiteralCommandNode<ServerCommandSource> flyspeedNode = CommandManager.literal("flyspeed").requires(source -> source.hasPermissionLevel(4)).build();
             ArgumentCommandNode<ServerCommandSource, Float> flyspeedSpeedNode = CommandManager.argument("speed", FloatArgumentType.floatArg(0, 100)).executes(FlyspeedCommand::flyspeed).build();
             LiteralCommandNode<ServerCommandSource> flyspeedResetNode = CommandManager.literal("reset").executes(FlyspeedCommand::reset).build();
+
+            // powertoy command
+            LiteralCommandNode<ServerCommandSource> powertoyNode = CommandManager.literal("powertoy").requires(source -> source.hasPermissionLevel(4)).build();
+            ArgumentCommandNode<ServerCommandSource, String> powertoyCommandNode = CommandManager.argument("command", StringArgumentType.greedyString()).executes(PowertoyCommand::run).build();
 
             // Add commands to root
             RootCommandNode<ServerCommandSource> root = dispatcher.getRoot();
@@ -81,7 +85,7 @@ public class CommandRegistry {
                     hatNode, repairNode, replyNode, healNode,
                     feedNode, spawnNode, setSpawnNode, stellartuneNode,
                     tpaNode, tpacceptNode, tpadeclineNode, rtpNode,
-                    flyspeedNode
+                    flyspeedNode, powertoyNode
             };
             for (LiteralCommandNode node : nodes) {
                 root.addChild(node);
@@ -100,6 +104,7 @@ public class CommandRegistry {
             tpadeclineNode.addChild(tpadeclinePlayerNode);
             flyspeedNode.addChild(flyspeedSpeedNode);
             flyspeedNode.addChild(flyspeedResetNode);
+            powertoyNode.addChild(powertoyCommandNode);
         });
     }
 }

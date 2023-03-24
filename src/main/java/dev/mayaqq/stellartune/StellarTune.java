@@ -5,6 +5,8 @@ import dev.mayaqq.stellartune.registry.CommandRegistry;
 import dev.mayaqq.stellartune.registry.EventRegistry;
 import dev.mayaqq.stellartune.registry.StatRegistry;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
+import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 
 import java.util.logging.Logger;
 
