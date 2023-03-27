@@ -76,6 +76,20 @@ public class CommandRegistry {
             LiteralCommandNode<ServerCommandSource> powertoyNode = CommandManager.literal("powertoy").requires(source -> source.hasPermissionLevel(4)).build();
             ArgumentCommandNode<ServerCommandSource, String> powertoyCommandNode = CommandManager.argument("command", StringArgumentType.greedyString()).executes(PowertoyCommand::run).build();
 
+            // here command
+            LiteralCommandNode<ServerCommandSource> hereNode = CommandManager.literal("here").executes(HereCommand::here).build();
+
+            // night vision command
+            LiteralCommandNode<ServerCommandSource> nightvisionNode = CommandManager.literal("nightvision").requires(source -> source.hasPermissionLevel(4)).executes(NightvisionCommand::nightvision).build();
+
+            // set home
+            LiteralCommandNode<ServerCommandSource> setHomeNode = CommandManager.literal("sethome").executes(HomeCommand::setHomeUnnamed).build();
+            ArgumentCommandNode<ServerCommandSource, String> setHomeNameNode = CommandManager.argument("name", StringArgumentType.word()).executes(HomeCommand::setHome).build();
+            LiteralCommandNode<ServerCommandSource> removeHomeNode = CommandManager.literal("removehome").executes(HomeCommand::removeHomeUnnamed).build();
+            ArgumentCommandNode<ServerCommandSource, String> removeHomeNameNode = CommandManager.argument("name", StringArgumentType.word()).executes(HomeCommand::removeHome).build();
+            LiteralCommandNode<ServerCommandSource> homeNode = CommandManager.literal("home").executes(HomeCommand::homeUnnamed).build();
+            ArgumentCommandNode<ServerCommandSource, String> homeNameNode = CommandManager.argument("name", StringArgumentType.word()).executes(HomeCommand::home).build();
+
             // Add commands to root
             RootCommandNode<ServerCommandSource> root = dispatcher.getRoot();
 
@@ -85,7 +99,8 @@ public class CommandRegistry {
                     hatNode, repairNode, replyNode, healNode,
                     feedNode, spawnNode, setSpawnNode, stellartuneNode,
                     tpaNode, tpacceptNode, tpadeclineNode, rtpNode,
-                    flyspeedNode, powertoyNode
+                    flyspeedNode, powertoyNode, hereNode, nightvisionNode,
+                    setHomeNode, removeHomeNode, homeNode
             };
             for (LiteralCommandNode node : nodes) {
                 root.addChild(node);
@@ -105,6 +120,9 @@ public class CommandRegistry {
             flyspeedNode.addChild(flyspeedSpeedNode);
             flyspeedNode.addChild(flyspeedResetNode);
             powertoyNode.addChild(powertoyCommandNode);
+            setHomeNode.addChild(setHomeNameNode);
+            removeHomeNode.addChild(removeHomeNameNode);
+            homeNode.addChild(homeNameNode);
         });
     }
 }
