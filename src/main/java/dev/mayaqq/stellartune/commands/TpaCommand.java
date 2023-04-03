@@ -29,16 +29,56 @@ public class TpaCommand {
         }
         requests.add(sender);
         tpaRequests.put(target, requests);
-        sender.sendMessage(Text.of("§bYou §6have sent a teleport request to §b" + target.getDisplayName().getString() + "§6! §cThis will expire in §4" + StellarConfig.CONFIG.tpaTimeout + " §cseconds!"), false);
-        target.sendMessage(Text.of("§b" + sender.getDisplayName().getString() + " §6has sent you a teleport request! §cThis will expire in §4" + StellarConfig.CONFIG.tpaTimeout + " §cseconds!"), false);
-        target.sendMessage(Text.literal("Accept").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getName().getString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("§2Click to accept!"))).withColor(Formatting.DARK_GREEN)), false);
-        target.sendMessage(Text.literal("Decline").styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpadecline " + sender.getName().getString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("§4Click to decline!"))).withColor(Formatting.DARK_RED)), false);
+        sender.sendMessage(
+                Text.literal("You").formatted(Formatting.AQUA)
+                .append(Text.literal(" have sent a teleport request to ").formatted(Formatting.GOLD))
+                        .append(target.getDisplayName())
+                        .append(Text.literal("! ").formatted(Formatting.GOLD))
+                .append(Text.literal("This will expire in: ").formatted(Formatting.RED))
+                        .append(Text.literal(String.valueOf(StellarConfig.CONFIG.tpaTimeout)).formatted(Formatting.DARK_RED))
+                        .append(Text.literal(" seconds!").formatted(Formatting.RED))
+        );
+        // the tpa message
+        target.sendMessage(
+                Text.literal("").formatted(Formatting.AQUA).append(sender.getDisplayName())
+                    .append(Text.literal( " has sent you a teleport request! ").formatted(Formatting.GOLD))
+                .append(Text.literal("This will expire in: ").formatted(Formatting.RED))
+                    .append(Text.literal(String.valueOf(StellarConfig.CONFIG.tpaTimeout)).formatted(Formatting.DARK_RED))
+                    .append(Text.literal(" seconds! ").formatted(Formatting.RED))
+                .append(Text.literal("[").formatted(Formatting.DARK_GRAY))
+                    .append(Text.literal("Accept")
+                            .styled(style -> style
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + sender.getDisplayName().getString()))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to accept the teleport request!").formatted(Formatting.GREEN)))
+                                    .withColor(Formatting.DARK_GREEN)
+                            ))
+                .append(Text.literal("]").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal(" "))
+                .append(Text.literal("[").formatted(Formatting.DARK_GRAY))
+                    .append(Text.literal("Decline")
+                            .styled(style -> style
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpadecline " + sender.getDisplayName().getString()))
+                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to decline the teleport request!").formatted(Formatting.RED)))
+                                    .withColor(Formatting.DARK_RED)
+                            ))
+                .append(Text.literal("]").formatted(Formatting.DARK_GRAY))
+        );
+
         Multithreading.schedule(() -> {
             if (tpaRequests.containsKey(target)) {
                 if (tpaRequests.get(target).contains(sender)) {
                     tpaRequests.get(target).remove(sender);
-                    sender.sendMessage(Text.of("§bYour §6teleport request to §b" + target.getDisplayName().getString() + " §6has expired!"), false);
-                    target.sendMessage(Text.of("§6Teleport request from §b" + sender.getDisplayName().getString() + " §6has expired!"), false);
+                    sender.sendMessage(
+                            Text.literal("Your").formatted(Formatting.AQUA)
+                                    .append(Text.literal(" teleport request to ").formatted(Formatting.GOLD))
+                                    .append(target.getDisplayName())
+                                    .append(Text.literal(" has expired!").formatted(Formatting.GOLD))
+                    );
+                    target.sendMessage(
+                            Text.literal("").formatted(Formatting.AQUA).append(Text.literal("Teleport request from ").formatted(Formatting.GOLD))
+                                    .append(sender.getDisplayName())
+                                    .append(Text.literal(" has expired!").formatted(Formatting.GOLD))
+                    );
                 }
             }
         }, StellarConfig.CONFIG.tpaTimeout, TimeUnit.SECONDS);
@@ -49,12 +89,25 @@ public class TpaCommand {
         ServerPlayerEntity sender = context.getSource().getPlayer();
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
         if (!tpaRequests.get(sender).contains(target)) {
-            sender.sendMessage(Text.of("§bYou §6have not received a teleport request from §b" + target.getDisplayName().getString() + "§6!"), true);
+            sender.sendMessage(
+                    Text.literal("You").formatted(Formatting.AQUA)
+                            .append(Text.literal(" have not received a teleport request from ").formatted(Formatting.GOLD))
+                            .append(target.getDisplayName())
+                            .append(Text.literal("!").formatted(Formatting.GOLD))
+            );
             return 1;
         } else {
             tpaRequests.get(sender).remove(target);
-            sender.sendMessage(Text.of("§bYou §6have declined §b" + target.getDisplayName().getString() + "§6's teleport request!"), true);
-            target.sendMessage(Text.of("§b" + sender.getDisplayName().getString() + " §6has declined your teleport request!"), true);
+            sender.sendMessage(
+                    Text.literal("You").formatted(Formatting.AQUA)
+                            .append(Text.literal(" have declined ").formatted(Formatting.GOLD))
+                            .append(target.getDisplayName())
+                            .append(Text.literal("'s teleport request!").formatted(Formatting.GOLD))
+            );
+            target.sendMessage(
+                    Text.literal("").formatted(Formatting.AQUA).append(sender.getDisplayName())
+                            .append(Text.literal(" has declined your teleport request!").formatted(Formatting.GOLD))
+            );
         }
 
         return 1;
@@ -63,12 +116,26 @@ public class TpaCommand {
     public static int declineWithoutArgument(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity sender = context.getSource().getPlayer();
         if (tpaRequests.get(sender).isEmpty()) {
-            sender.sendMessage(Text.of("§bYou §6have not received any teleport requests!"), true);
+            sender.sendMessage(
+                    Text.literal("You").formatted(Formatting.AQUA)
+                            .append(Text.literal(" have not received any teleport requests!").formatted(Formatting.GOLD)),
+                    true
+            );
         } else {
-            tpaRequests.get(sender).forEach(player -> player.sendMessage(Text.of("§b" + sender.getDisplayName().getString() + " §6has declined your teleport request!"), false));
+            tpaRequests.get(sender).forEach(player ->
+                    player.sendMessage(
+                            Text.literal("").formatted(Formatting.AQUA).append(sender.getDisplayName())
+                                    .append(Text.literal(" has declined your teleport request!").formatted(Formatting.GOLD))
+                    , true
+                    )
+            );
             tpaRequests.get(sender).clear();
             sender.sendMessage(Text.of("§bYou §6have declined all teleport requests!"), true);
-
+            sender.sendMessage(
+                    Text.literal("You").formatted(Formatting.AQUA)
+                            .append(Text.literal(" have declined all teleport requests!").formatted(Formatting.GOLD)),
+                    true
+            );
         }
         return 1;
     }
@@ -77,7 +144,12 @@ public class TpaCommand {
         ServerPlayerEntity sender = context.getSource().getPlayer();
         ServerPlayerEntity target = EntityArgumentType.getPlayer(context, "player");
         if (!tpaRequests.get(sender).contains(target)) {
-            sender.sendMessage(Text.of("§bYou §6have not received a teleport request from §b" + target.getDisplayName().getString() + "§6!"), true);
+            sender.sendMessage(
+                    Text.literal("You").formatted(Formatting.AQUA)
+                            .append(Text.literal(" have not received a teleport request from ").formatted(Formatting.GOLD))
+                            .append(target.getDisplayName())
+                            .append(Text.literal("!").formatted(Formatting.GOLD))
+            );
             return 1;
         } else {
             acceptRequest(sender, target);
@@ -88,7 +160,11 @@ public class TpaCommand {
     public static int acceptWithoutArgument(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity sender = context.getSource().getPlayer();
         if (tpaRequests.get(sender).isEmpty()) {
-            sender.sendMessage(Text.of("§bYou §6have not received any teleport requests!"), true);
+            sender.sendMessage(
+                    Text.literal("You").formatted(Formatting.AQUA)
+                            .append(Text.literal(" have not received any teleport requests!").formatted(Formatting.GOLD)),
+                    true
+            );
         } else {
             ServerPlayerEntity target = tpaRequests.get(sender).get(tpaRequests.get(sender).size() - 1);
             acceptRequest(sender, target);
@@ -98,8 +174,17 @@ public class TpaCommand {
 
     private static void acceptRequest(ServerPlayerEntity sender, ServerPlayerEntity target) {
         tpaRequests.get(sender).remove(target);
-        sender.sendMessage(Text.of("§bYou §6have accepted §b" + target.getDisplayName().getString() + "§6's teleport request!"), true);
-        target.sendMessage(Text.of("§b" + sender.getDisplayName().getString() + " §6has accepted your teleport request!"), true);
+        sender.sendMessage(
+                Text.literal("You").formatted(Formatting.AQUA)
+                        .append(Text.literal(" have accepted ").formatted(Formatting.GOLD))
+                        .append(target.getDisplayName())
+                        .append(Text.literal("'s teleport request!").formatted(Formatting.GOLD))
+        );
+        target.sendMessage(
+                Text.literal("").formatted(Formatting.AQUA).append(sender.getDisplayName())
+                        .append(Text.literal(" has accepted your teleport request!").formatted(Formatting.GOLD))
+                , true
+        );
         sender.teleport(target.getWorld(), target.getX(), target.getY(), target.getZ(), sender.getYaw(), sender.getPitch());
     }
 }

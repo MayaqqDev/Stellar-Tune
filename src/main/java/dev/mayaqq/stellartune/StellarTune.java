@@ -5,12 +5,12 @@ import dev.mayaqq.stellartune.registry.CommandRegistry;
 import dev.mayaqq.stellartune.registry.EventRegistry;
 import dev.mayaqq.stellartune.registry.StatRegistry;
 import net.fabricmc.api.ModInitializer;
-
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StellarTune implements ModInitializer {
 
-    public static final Logger LOGGER = Logger.getLogger("StellarTune");
+    public static final Logger LOGGER = LoggerFactory.getLogger("StellarTune");
 
     @Override
     public void onInitialize() {

@@ -1,31 +1,36 @@
 package dev.mayaqq.stellartune.commands;
 
 import com.mojang.brigadier.context.CommandContext;
-import dev.mayaqq.stellartune.config.StellarConfig;
+import dev.mayaqq.stellartune.dataStorage.ServerState;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 public class SpawnCommand {
     public static int spawn(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        if (StellarConfig.CONFIG.spawnCoords[0] == null) {
-            player.sendMessage(Text.of("§4No spawnpoint set yet!"), true);
-            return 1;
-        } else {
-            player.teleport(StellarConfig.CONFIG.spawnCoords[0], StellarConfig.CONFIG.spawnCoords[1], StellarConfig.CONFIG.spawnCoords[2]);
-            player.sendMessage(Text.of("§bYou §6have been teleported to §bspawn§6!"), true);
-        }
+        int[] spawnCoords = ServerState.getServerState(player.getServer()).spawnCoords;
+        Identifier spawnWorld = new Identifier(ServerState.getServerState(player.getServer()).spawnDimension.split(":")[0], ServerState.getServerState(player.getServer()).spawnDimension.split(":")[1]);
+        ServerWorld world = player.getServer().getWorld(RegistryKey.of(RegistryKeys.WORLD, spawnWorld));
+        player.teleport(world, spawnCoords[0], spawnCoords[1], spawnCoords[2], player.getYaw(), player.getPitch());
+        player.sendMessage(Text.of("§bYou §6have been teleported to §bspawn§6!"), true);
 
         return 1;
     }
 
     public static int setSpawn(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Integer[] spawnCoords = {player.getBlockPos().getX(), player.getBlockPos().getY(), player.getBlockPos().getZ()};
-        StellarConfig.CONFIG.spawnCoords = spawnCoords;
-        StellarConfig.save();
-        context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have set the spawn to §b" + player.getBlockPos().getX() + player.getBlockPos().getY() + player.getBlockPos().getZ() + "§6!"), true);
+        BlockPos spawnPos = player.getBlockPos();
+        int[] spawnCoords = new int[]{spawnPos.getX(), spawnPos.getY(), spawnPos.getZ()};
+        Identifier spawnWorld = player.getWorld().getRegistryKey().getValue();
+        ServerState.getServerState(player.getServer()).spawnCoords = spawnCoords;
+        ServerState.getServerState(player.getServer()).spawnDimension = spawnWorld.toString();
+        player.sendMessage(Text.of("§bYou §6have set the spawn to §b" + spawnPos.getX() + " " + spawnPos.getY() + " " + spawnPos.getZ() + "§6!"), true);
 
         return 1;
     }

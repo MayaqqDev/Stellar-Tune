@@ -6,6 +6,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import dev.mayaqq.stellartune.commands.*;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -20,42 +21,44 @@ public class CommandRegistry {
 
             LiteralCommandNode<ServerCommandSource> stellartuneNode = CommandManager.literal("stellartune").executes(HelpCommand::run).build();
             LiteralCommandNode<ServerCommandSource> stellartuneHelpNode = CommandManager.literal("help").executes(HelpCommand::run).build();
+            LiteralCommandNode<ServerCommandSource> configNode = CommandManager.literal("config").requires(Permissions.require("stellar.command.config")).executes(ConfigCommand::run).build();
+            LiteralCommandNode<ServerCommandSource> reloadConfigNode = CommandManager.literal("reload").requires(Permissions.require("stellar.command.config.reload")).executes(ConfigCommand::reload).build();
 
-            ArgumentCommandNode<ServerCommandSource, String> stellartuneHelpContentNode = CommandManager.argument("content", StringArgumentType.greedyString()).requires(source -> source.hasPermissionLevel(4)).executes(HelpCommand::setContent).build();
+            ArgumentCommandNode<ServerCommandSource, String> stellartuneHelpContentNode = CommandManager.argument("content", StringArgumentType.greedyString()).requires(Permissions.require("stellar.command.help.set")).executes(HelpCommand::setContent).build();
 
             // Game mode commands
-            LiteralCommandNode<ServerCommandSource> gmcNode = CommandManager.literal("gmc").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gmc).build();
-            LiteralCommandNode<ServerCommandSource> gmsNode = CommandManager.literal("gms").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gms).build();
-            LiteralCommandNode<ServerCommandSource> gmaNode = CommandManager.literal("gma").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gma).build();
-            LiteralCommandNode<ServerCommandSource> gmspNode = CommandManager.literal("gmsp").requires(source -> source.hasPermissionLevel(4)).executes(GamemodeCommands::gmsp).build();
+            LiteralCommandNode<ServerCommandSource> gmcNode = CommandManager.literal("gmc").requires(Permissions.require("stellar.command.gamemode")).executes(GamemodeCommands::gmc).build();
+            LiteralCommandNode<ServerCommandSource> gmsNode = CommandManager.literal("gms").requires(Permissions.require("stellar.command.gamemode")).executes(GamemodeCommands::gms).build();
+            LiteralCommandNode<ServerCommandSource> gmaNode = CommandManager.literal("gma").requires(Permissions.require("stellar.command.gamemode")).executes(GamemodeCommands::gma).build();
+            LiteralCommandNode<ServerCommandSource> gmspNode = CommandManager.literal("gmsp").requires(Permissions.require("stellar.command.gamemode")).executes(GamemodeCommands::gmsp).build();
 
             // Hat command
-            LiteralCommandNode<ServerCommandSource> hatNode = CommandManager.literal("hat").requires(source -> source.hasPermissionLevel(3)).executes(HatCommand::normal).build();
+            LiteralCommandNode<ServerCommandSource> hatNode = CommandManager.literal("hat").requires(Permissions.require("stellar.command.hat")).executes(HatCommand::normal).build();
             ArgumentCommandNode<ServerCommandSource, ItemStackArgument> hatItemNode = CommandManager.argument("item", ItemStackArgumentType.itemStack(dedicated)).executes(HatCommand::item).build();
 
             //repair command
-            LiteralCommandNode<ServerCommandSource> repairNode = CommandManager.literal("repair").requires(source -> source.hasPermissionLevel(4)).executes(RepairCommand::single).build();
-            LiteralCommandNode<ServerCommandSource> repairSingleNode = CommandManager.literal("hand").requires(source -> source.hasPermissionLevel(4)).executes(RepairCommand::single).build();
-            LiteralCommandNode<ServerCommandSource> repairAllNode = CommandManager.literal("all").requires(source -> source.hasPermissionLevel(4)).executes(RepairCommand::all).build();
+            LiteralCommandNode<ServerCommandSource> repairNode = CommandManager.literal("repair").requires(Permissions.require("stellar.command.repair")).executes(RepairCommand::single).build();
+            LiteralCommandNode<ServerCommandSource> repairSingleNode = CommandManager.literal("hand").executes(RepairCommand::single).build();
+            LiteralCommandNode<ServerCommandSource> repairAllNode = CommandManager.literal("all").executes(RepairCommand::all).build();
 
             // reply command
             LiteralCommandNode<ServerCommandSource> replyNode = CommandManager.literal("r").executes(ReplyCommand::fail).build();
             ArgumentCommandNode<ServerCommandSource, String> replyMessageNode = CommandManager.argument("message", StringArgumentType.greedyString()).executes(ReplyCommand::reply).build();
 
             //heal command
-            LiteralCommandNode<ServerCommandSource> healNode = CommandManager.literal("heal").requires(source -> source.hasPermissionLevel(4)).executes(HealCommand::heal).build();
+            LiteralCommandNode<ServerCommandSource> healNode = CommandManager.literal("heal").requires(Permissions.require("stellar.command.heal")).executes(HealCommand::heal).build();
             ArgumentCommandNode<ServerCommandSource, EntitySelector> healPlayersArgumentNode = CommandManager.argument("players", EntityArgumentType.players()).executes(HealCommand::healPlayers).build();
 
             //feed command
-            LiteralCommandNode<ServerCommandSource> feedNode = CommandManager.literal("feed").requires(source -> source.hasPermissionLevel(4)).executes(FeedCommand::feed).build();
+            LiteralCommandNode<ServerCommandSource> feedNode = CommandManager.literal("feed").requires(Permissions.require("stellar.command.feed")).executes(FeedCommand::feed).build();
             ArgumentCommandNode<ServerCommandSource, EntitySelector> feedPlayersArgumentNode = CommandManager.argument("players", EntityArgumentType.players()).executes(FeedCommand::feedPlayers).build();
 
             //spawn command
-            LiteralCommandNode<ServerCommandSource> spawnNode = CommandManager.literal("spawn").requires(source -> source.hasPermissionLevel(3)).executes(SpawnCommand::spawn).build();
-            LiteralCommandNode<ServerCommandSource> setSpawnNode = CommandManager.literal("setSpawn").requires(source -> source.hasPermissionLevel(4)).executes(SpawnCommand::setSpawn).build();
+            LiteralCommandNode<ServerCommandSource> spawnNode = CommandManager.literal("spawn").requires(Permissions.require("stellar.command.spawn")).executes(SpawnCommand::spawn).build();
+            LiteralCommandNode<ServerCommandSource> setSpawnNode = CommandManager.literal("setSpawn").requires(Permissions.require("stellar.command.spawn.set")).executes(SpawnCommand::setSpawn).build();
 
             // tpa command and stuff with it
-            LiteralCommandNode<ServerCommandSource> tpaNode = CommandManager.literal("tpa").build();
+            LiteralCommandNode<ServerCommandSource> tpaNode = CommandManager.literal("tpa").requires(Permissions.require("stellar.command.tpa")).build();
             ArgumentCommandNode<ServerCommandSource, EntitySelector> tpaPlayerNode = CommandManager.argument("player", EntityArgumentType.player()).executes(TpaCommand::tpa).build();
 
             LiteralCommandNode<ServerCommandSource> tpacceptNode = CommandManager.literal("tpaccept").executes(TpaCommand::acceptWithoutArgument).build();
@@ -65,30 +68,31 @@ public class CommandRegistry {
             ArgumentCommandNode<ServerCommandSource, EntitySelector> tpadeclinePlayerNode = CommandManager.argument("player", EntityArgumentType.player()).executes(TpaCommand::decline).build();
 
             // rtp
-            LiteralCommandNode<ServerCommandSource> rtpNode = CommandManager.literal("rtp").executes(RtpCommand::rtp).build();
+            LiteralCommandNode<ServerCommandSource> rtpNode = CommandManager.literal("rtp").requires(Permissions.require("stellar.command.rtp")).executes(RtpCommand::rtp).build();
 
             // /flyspeed command
-            LiteralCommandNode<ServerCommandSource> flyspeedNode = CommandManager.literal("flyspeed").requires(source -> source.hasPermissionLevel(4)).build();
+            LiteralCommandNode<ServerCommandSource> flyspeedNode = CommandManager.literal("flyspeed").requires(Permissions.require("stellar.command.flyspeed")).build();
             ArgumentCommandNode<ServerCommandSource, Float> flyspeedSpeedNode = CommandManager.argument("speed", FloatArgumentType.floatArg(0, 100)).executes(FlyspeedCommand::flyspeed).build();
             LiteralCommandNode<ServerCommandSource> flyspeedResetNode = CommandManager.literal("reset").executes(FlyspeedCommand::reset).build();
 
             // powertoy command
-            LiteralCommandNode<ServerCommandSource> powertoyNode = CommandManager.literal("powertoy").requires(source -> source.hasPermissionLevel(4)).build();
+            LiteralCommandNode<ServerCommandSource> powertoyNode = CommandManager.literal("powertoy").requires(Permissions.require("stellar.command.powertoy")).build();
             ArgumentCommandNode<ServerCommandSource, String> powertoyCommandNode = CommandManager.argument("command", StringArgumentType.greedyString()).executes(PowertoyCommand::run).build();
 
             // here command
             LiteralCommandNode<ServerCommandSource> hereNode = CommandManager.literal("here").executes(HereCommand::here).build();
 
             // night vision command
-            LiteralCommandNode<ServerCommandSource> nightvisionNode = CommandManager.literal("nightvision").requires(source -> source.hasPermissionLevel(4)).executes(NightvisionCommand::nightvision).build();
+            LiteralCommandNode<ServerCommandSource> nightvisionNode = CommandManager.literal("nightvision").requires(Permissions.require("stellar.command.nightvision")).executes(NightvisionCommand::nightvision).build();
 
             // set home
-            LiteralCommandNode<ServerCommandSource> setHomeNode = CommandManager.literal("sethome").executes(HomeCommand::setHomeUnnamed).build();
+            LiteralCommandNode<ServerCommandSource> setHomeNode = CommandManager.literal("sethome").requires(Permissions.require("stellar.command.sethome")).executes(HomeCommand::setHomeUnnamed).build();
             ArgumentCommandNode<ServerCommandSource, String> setHomeNameNode = CommandManager.argument("name", StringArgumentType.word()).executes(HomeCommand::setHome).build();
-            LiteralCommandNode<ServerCommandSource> removeHomeNode = CommandManager.literal("removehome").executes(HomeCommand::removeHomeUnnamed).build();
+            LiteralCommandNode<ServerCommandSource> removeHomeNode = CommandManager.literal("removehome").requires(Permissions.require("stellar.command.removehome")).executes(HomeCommand::removeHomeUnnamed).build();
             ArgumentCommandNode<ServerCommandSource, String> removeHomeNameNode = CommandManager.argument("name", StringArgumentType.word()).executes(HomeCommand::removeHome).build();
-            LiteralCommandNode<ServerCommandSource> homeNode = CommandManager.literal("home").executes(HomeCommand::homeUnnamed).build();
+            LiteralCommandNode<ServerCommandSource> homeNode = CommandManager.literal("home").requires(Permissions.require("stellar.command.home")).executes(HomeCommand::homeUnnamed).build();
             ArgumentCommandNode<ServerCommandSource, String> homeNameNode = CommandManager.argument("name", StringArgumentType.word()).executes(HomeCommand::home).build();
+            LiteralCommandNode<ServerCommandSource> listHomesNode = CommandManager.literal("listhomes").requires(Permissions.require("stellar.command.listhomes")).executes(HomeCommand::getHomes).build();
 
             // Add commands to root
             RootCommandNode<ServerCommandSource> root = dispatcher.getRoot();
@@ -100,7 +104,7 @@ public class CommandRegistry {
                     feedNode, spawnNode, setSpawnNode, stellartuneNode,
                     tpaNode, tpacceptNode, tpadeclineNode, rtpNode,
                     flyspeedNode, powertoyNode, hereNode, nightvisionNode,
-                    setHomeNode, removeHomeNode, homeNode
+                    setHomeNode, removeHomeNode, homeNode, listHomesNode
             };
             for (LiteralCommandNode node : nodes) {
                 root.addChild(node);
@@ -113,6 +117,8 @@ public class CommandRegistry {
             healNode.addChild(healPlayersArgumentNode);
             feedNode.addChild(feedPlayersArgumentNode);
             stellartuneNode.addChild(stellartuneHelpNode);
+            stellartuneNode.addChild(configNode);
+            configNode.addChild(reloadConfigNode);
             stellartuneHelpNode.addChild(stellartuneHelpContentNode);
             tpaNode.addChild(tpaPlayerNode);
             tpacceptNode.addChild(tpacceptPlayerNode);

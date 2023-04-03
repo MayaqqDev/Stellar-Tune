@@ -28,6 +28,7 @@ public class StellarConfig {
         } else {
             try {
                 CONFIG = gson.fromJson(new FileReader(configFile), Config.class);
+                save();
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -46,15 +47,15 @@ public class StellarConfig {
 
     public static class Config {
         // world name : spawn coords
-        public Integer[] spawnCoords = new Integer[3];
         public String helpContent = "This will get send when the player does /help";
         public int tpaTimeout = 60;
         public int rtpRange = 10000;
         public boolean limitedRtpUse = false;
         public int rtpUses = 3;
         public int rtpCooldown = 3600;
+        public int homeCount = 1;
+        public int homeCooldown = 0;
 
-        public Config() {
-        }
+        public Config() {}
     }
 }

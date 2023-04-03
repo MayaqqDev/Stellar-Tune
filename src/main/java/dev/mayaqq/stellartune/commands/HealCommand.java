@@ -13,19 +13,24 @@ public class HealCommand {
     public static int heal(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
         healPlayer(player);
-        context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have been healed!"), true);
+        player.sendMessage(Text.of("§bYou §6have been healed!"), true);
 
         return 1;
     }
 
     public static int healPlayers(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+        ServerPlayerEntity player = context.getSource().getPlayer();
         players.forEach(HealCommand::healPlayer);
-        if (players.size() == 1)
-            context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have healed §b" + players.toArray()[0] + " §6!"), true);
-        else if (players.size() > 1) {
-            context.getSource().getPlayer().sendMessage(Text.of("§bYou §6have healed §b" + players.size() + " §6players!"), true);
+        StringBuilder sb = new StringBuilder();
+        sb.append("§bYou §6have healed §b");
+        if (players.size() == 1) {
+            sb.append(players.toArray()[0]).append(" §6!");
         }
+        else {
+            sb.append(players.size()).append(" §6players!");
+        }
+        player.sendMessage(Text.of(sb.toString()));
         return 1;
     }
 
