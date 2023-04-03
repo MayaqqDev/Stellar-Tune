@@ -5,6 +5,9 @@ import dev.mayaqq.stellartune.registry.CommandRegistry;
 import dev.mayaqq.stellartune.registry.EventRegistry;
 import dev.mayaqq.stellartune.registry.StatRegistry;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +21,12 @@ public class StellarTune implements ModInitializer {
         StatRegistry.register();
         CommandRegistry.register();
         EventRegistry.register();
+
+        ServerPlayNetworking.registerGlobalReceiver(new Identifier("stellartune", "tune"), (server, player, handler, buf, responseSender) -> {
+            server.execute(() -> {
+
+            });
+        });
 
         LOGGER.info("Tuning your game!");
     }

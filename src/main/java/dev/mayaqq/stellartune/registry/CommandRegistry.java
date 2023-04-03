@@ -76,7 +76,7 @@ public class CommandRegistry {
             LiteralCommandNode<ServerCommandSource> flyspeedResetNode = CommandManager.literal("reset").executes(FlyspeedCommand::reset).build();
 
             // powertoy command
-            LiteralCommandNode<ServerCommandSource> powertoyNode = CommandManager.literal("powertoy").requires(Permissions.require("stellar.command.powertoy")).build();
+            LiteralCommandNode<ServerCommandSource> powertoyNode = CommandManager.literal("powertoy").requires(Permissions.require("stellar.command.powertoy")).executes(PowertoyCommand::remove).build();
             ArgumentCommandNode<ServerCommandSource, String> powertoyCommandNode = CommandManager.argument("command", StringArgumentType.greedyString()).executes(PowertoyCommand::run).build();
 
             // here command
