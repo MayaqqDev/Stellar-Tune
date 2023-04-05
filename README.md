@@ -7,7 +7,7 @@
 [![Github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@2/assets/cozy/available/github_64h.png)](https://github.com/MayaqqDev/stellar-tune/)
 ## `Information`
 
-Server-side, EssentialsX-like mod with some neat features. To see the full list of features, their explanations and how to use them, check out the [wiki](https://mayaqq.dev/stellar-tune)
+Server-side, EssentialsX-like mod with some neat features. To see the full list of features, their explanations and how to use them, check out the [wiki](https://stellar-tune.mayaqq.dev)
 
 ## `Community`
 
