@@ -46,7 +46,7 @@ public class RtpCommand {
                 player.sendMessage(Text.of("§bTeleporting..."), true);
                 while (true) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    if (!(player.world.getBlockState(pos) == Blocks.AIR.getDefaultState())) {
+                    if (!(player.getWorld().getBlockState(pos) == Blocks.AIR.getDefaultState())) {
                         y++;
                         player.teleport(x, y, z);
                         break;

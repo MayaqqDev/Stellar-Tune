@@ -7,6 +7,7 @@ import dev.mayaqq.stellartune.utils.Multithreading;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
@@ -185,6 +186,6 @@ public class TpaCommand {
                         .append(Text.literal(" has accepted your teleport request!").formatted(Formatting.GOLD))
                 , true
         );
-        sender.teleport(target.getWorld(), target.getX(), target.getY(), target.getZ(), sender.getYaw(), sender.getPitch());
+        sender.teleport((ServerWorld) target.getWorld(), target.getX(), target.getY(), target.getZ(), sender.getYaw(), sender.getPitch());
     }
 }

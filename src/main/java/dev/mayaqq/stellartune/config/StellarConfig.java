@@ -55,6 +55,7 @@ public class StellarConfig {
         public int rtpCooldown = 3600;
         public int homeCount = 1;
         public int homeCooldown = 0;
+        public String serverBrand = "StellarTune";
 
         public Config() {}
     }

@@ -20,7 +20,7 @@ public class HomeCommand {
         ServerState.PlayerState playerState = ServerState.getPlayerState(player);
         if (playerState.homes.isEmpty() && StellarConfig.CONFIG.homeCount > 0) {
             int[] homePos = new int[]{player.getBlockPos().getX(), player.getBlockPos().getY(), player.getBlockPos().getZ()};
-            ServerWorld world = player.getWorld();
+            ServerWorld world = (ServerWorld) player.getWorld();
             playerState.homes.put("home", homePos);
             playerState.homesDimension.put("home", world.getRegistryKey().getValue().toString());
             player.sendMessage(Text.literal("Home set to your current position.").formatted(Formatting.GOLD), true);
@@ -47,7 +47,7 @@ public class HomeCommand {
                 return 1;
             }
             int[] homePos = new int[]{player.getBlockPos().getX(), player.getBlockPos().getY(), player.getBlockPos().getZ()};
-            ServerWorld world = player.getWorld();
+            ServerWorld world = (ServerWorld) player.getWorld();
             playerState.homes.put(homeName, homePos);
             playerState.homesDimension.put(homeName, world.getRegistryKey().getValue().toString());
             player.sendMessage(Text.literal("Home ").formatted(Formatting.GOLD).append(Text.literal(homeName).formatted(Formatting.AQUA)).append(Text.literal(" set to your current position.").formatted(Formatting.GOLD)), true);

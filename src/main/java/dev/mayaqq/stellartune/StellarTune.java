@@ -6,7 +6,6 @@ import dev.mayaqq.stellartune.registry.EventRegistry;
 import dev.mayaqq.stellartune.registry.StatRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
