@@ -21,7 +21,7 @@ import static dev.mayaqq.stellartune.registry.StatRegistry.RTP_USES;
 
 public class RtpCommand {
     public static int rtp(CommandContext<ServerCommandSource> context) {
-        Multithreading.schedule(() -> {
+        Multithreading.submit(() -> {
             ServerPlayerEntity player = context.getSource().getPlayer();
             ServerState.PlayerState playerState = ServerState.getPlayerState(player);
             Long lastUse = playerState.lastRtpUse;
@@ -65,7 +65,7 @@ public class RtpCommand {
                 playerState.lastRtpUse = System.currentTimeMillis();
                 LOGGER.info(String.valueOf(playerState.lastRtpUse));
             }
-        }, 0, TimeUnit.SECONDS);
+        });
         return 1;
     }
 }

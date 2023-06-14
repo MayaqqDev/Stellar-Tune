@@ -16,7 +16,7 @@ public class EventRegistry {
             TpaCommand.tpaRequests.remove(player);
         });
         PermissionCheckEvent.EVENT.register((source, permission) -> {
-            if (source.hasPermissionLevel(4)) {
+            if (source.hasPermissionLevel(4) && permission.startsWith("stellar")) {
                 return TriState.TRUE;
             }
             return TriState.DEFAULT;
